@@ -1,10 +1,13 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,700&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+@import "tailwindcss"; 
 
 @layer base {
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: #FAF8F5;
-    color: #1F2923;
+    background-color: var(--bg, #FAF8F5);
+    color: var(--fg, #1F2923);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   .font-serif {
@@ -12,18 +15,167 @@
   }
 }
 
-/* Custom Ivory and Forest Green scrollbars and utilities */
+/* Theme tokens */
+:root {
+  --bg: #FAF8F5;
+  --fg: #1F2923;
+  --muted: #5A6B5D;
+  --card: #FFFFFF;
+  --lux-accent: #11361E;
+  --lux-accent-2: #7F5AFF;
+  --lux-gold: #CDA34B;
+  --lux-muted: #6B786F;
+  --lux-shadow: 0 6px 30px rgba(17,54,30,0.09), inset 0 1px 0 rgba(255,255,255,0.6);
+}
+
+[data-theme="dark"] {
+  --bg: #071014;
+  --fg: #E6F6F0;
+  --muted: #9FB8AD;
+  --card: #0b1620;
+}
+
+/* Make body transition smooth for theme changes */
+body {
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #FAF8F5;
+  background: var(--bg);
 }
 ::-webkit-scrollbar-thumb {
   background: #D8D2C6;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #11361E;
+  background: var(--lux-accent);
 }
+
+/* --- Luxury UI helpers --- */
+.brand-gradient {
+  background: linear-gradient(90deg, var(--lux-accent) 0%, var(--lux-accent-2) 60%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+body {
+  background-image:
+    linear-gradient(rgba(17, 54, 30, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 54, 30, 0.03) 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-attachment: fixed;
+}
+
+.hero-shell {
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+}
+
+.hero-shell::before {
+  content: '';
+  position: absolute;
+  inset: -20% auto auto -10%;
+  width: 280px;
+  height: 280px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(205,163,75,0.22), transparent 70%);
+  pointer-events: none;
+}
+
+.hero-shell::after {
+  content: '';
+  position: absolute;
+  inset: auto -8% -12% auto;
+  width: 320px;
+  height: 320px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(17,54,30,0.12), transparent 70%);
+  pointer-events: none;
+}
+
+.mesh-sheen {
+  background-image:
+    linear-gradient(rgba(17,54,30,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17,54,30,0.03) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(135deg, rgba(0,0,0,0.9), transparent 80%);
+}
+
+.glass-panel {
+  background: rgba(255,255,255,0.74);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.surface-card {
+  position: relative;
+  isolation: isolate;
+}
+
+.surface-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255,255,255,0.65), rgba(243,238,230,0.45));
+  z-index: -1;
+}
+
+.surface-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(17,54,30,0.08);
+  border-color: rgba(17,54,30,0.16);
+}
+
+.surface-card {
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.lux-cta {
+  background: linear-gradient(90deg, var(--lux-accent) 0%, #0B2414 100%);
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(17,54,30,0.18);
+  border-radius: 12px;
+  padding: 0.9rem 0.9rem;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.lux-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(17,54,30,0.22); }
+
+.lux-ghost {
+  background: transparent; border-radius: 10px; padding: 0.45rem 0.7rem; border: 1px solid rgba(17,54,30,0.06);
+}
+
+.lux-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,248,245,0.95));
+  border-radius: 16px;
+  box-shadow: var(--lux-shadow);
+  border: 1px solid rgba(17,54,30,0.06);
+  padding: 1.15rem;
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+.lux-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(17,54,30,0.12); }
+
+.lux-badge { background: rgba(205,163,75,0.12); color: var(--lux-gold); padding: 0.25rem 0.5rem; border-radius: 999px; font-weight:600; font-size:11px; }
+
+.muted-small { color: var(--lux-muted); font-size:12px; }
+
+.brand-frame { background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(250,248,245,0.6)); border-radius:12px; padding:0.35rem; border:1px solid rgba(17,54,30,0.04); box-shadow: 0 4px 18px rgba(17,54,30,0.06); }
+
+@keyframes floaty { 0% { transform: translateY(0); } 50% { transform: translateY(-4px); } 100% { transform: translateY(0); } }
+.soft-float { animation: floaty 5s ease-in-out infinite; }
+
+/* small input styles */
+.lux-input { background: rgba(255,255,255,0.85); border: 1px solid rgba(17,54,30,0.06); padding:0.6rem 0.75rem; border-radius:10px; }
+
+/* responsive container tweak for luxurious padding */
+.lux-container { max-width:1200px; margin:0 auto; padding:1rem; }
+
+/* subtle utility */
+.soft-muted { color: var(--muted); }

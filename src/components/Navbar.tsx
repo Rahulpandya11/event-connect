@@ -8,11 +8,7 @@ import {
   LogOut,
   ShieldAlert,
   Briefcase,
-  PlusCircle,
-  CheckCircle2,
-  Clock,
-  Layers,
-  ChevronDown
+  PlusCircle
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -36,52 +32,49 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenPostRequiremen
   const [showRoleMenu, setShowRoleMenu] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 bg-[#FAF8F5]/95 backdrop-blur-md border-b border-[#E2DDD3] text-[#1F2923]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Brand Logo */}
+    <header className="sticky top-0 z-40 border-b border-[#E2DDD3]/80 bg-[linear-gradient(90deg,rgba(250,248,245,0.96),rgba(247,242,232,0.95))] backdrop-blur-xl text-[#1F2923] shadow-[0_8px_24px_rgba(17,54,30,0.04)]">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-lg bg-[#E8F0EA] border border-[#11361E]/30 p-0.5 flex items-center justify-center shadow-sm">
-            <Sparkles className="w-4 h-4 text-[#11361E]" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#11361E]/25 bg-gradient-to-br from-[#E8F0EA] to-[#F7F2E8] shadow-[0_10px_22px_rgba(17,54,30,0.08)]">
+            <Sparkles className="h-5 w-5 text-[#11361E]" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <span className="font-serif italic font-bold text-xl tracking-tight text-[#11361E]">EventConnect</span>
-              <span className="text-[10px] font-semibold tracking-widest uppercase px-2 py-0.5 rounded bg-[#E8F0EA] text-[#11361E] border border-[#11361E]/20">
-                Blind Bidding
-              </span>
+              <span className="font-serif text-xl font-bold tracking-tight text-[#11361E]">EventConnect</span>
+              
             </div>
-            <p className="text-[11px] text-[#5A6B5D] uppercase tracking-wider hidden sm:block">Premium Event Marketplace</p>
+            <p className="hidden text-[11px] uppercase tracking-[0.2em] text-[#5A6B5D] sm:block">Premium Event Marketplace</p>
           </div>
         </div>
 
-        {/* Location Scope Indicator */}
-        <div className="hidden md:flex items-center space-x-2 bg-white px-3 py-1.5 rounded-md border border-[#E2DDD3] text-xs text-[#5A6B5D]">
-          <MapPin className="w-3.5 h-3.5 text-[#11361E]" />
-          <span>Launch Region: <strong className="text-[#1F2923]">Surat, Gujarat, India</strong></span>
+        <div className="hidden items-center space-x-2 rounded-full border border-[#E2DDD3]/80 bg-white/80 px-3 py-1.5 text-xs text-[#5A6B5D] shadow-sm md:flex">
+          <MapPin className="h-3.5 w-3.5 text-[#11361E]" />
+          <span>
+            Launch Region: <strong className="text-[#1F2923]">Surat, Gujarat, India</strong>
+          </span>
         </div>
 
-        {/* Right Nav Actions */}
         <div className="flex items-center space-x-3">
           {user ? (
             <>
               {/* Account Role Badge */}
-              <div className="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-md border border-[#E2DDD3] text-xs font-medium text-[#1F2923]">
+              <div className="surface-card flex items-center space-x-2 rounded-full border border-[#E2DDD3] bg-white/90 px-3 py-1.5 text-xs font-medium text-[#1F2923] shadow-sm">
                 {user.role === 'client' && (
                   <>
-                    <UserIcon className="w-3.5 h-3.5 text-[#11361E]" />
-                    <span className="text-[#11361E] font-semibold">Client Account</span>
+                    <UserIcon className="h-3.5 w-3.5 text-[#11361E]" />
+                    <span className="font-semibold text-[#11361E]">Client Account</span>
                   </>
                 )}
                 {user.role === 'provider' && (
                   <>
-                    <Briefcase className="w-3.5 h-3.5 text-[#11361E]" />
-                    <span className="text-[#11361E] font-semibold">Provider Account</span>
+                    <Briefcase className="h-3.5 w-3.5 text-[#11361E]" />
+                    <span className="font-semibold text-[#11361E]">Provider Account</span>
                   </>
                 )}
                 {user.role === 'admin' && (
                   <>
-                    <ShieldAlert className="w-3.5 h-3.5 text-rose-600" />
-                    <span className="text-rose-700 font-semibold">Admin Portal</span>
+                    <ShieldAlert className="h-3.5 w-3.5 text-rose-600" />
+                    <span className="font-semibold text-rose-700">Admin Portal</span>
                   </>
                 )}
               </div>
@@ -90,9 +83,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenPostRequiremen
               {activeRole === 'client' && onOpenPostRequirement && (
                 <button
                   onClick={onOpenPostRequirement}
-                  className="bg-[#11361E] hover:bg-[#0B2414] text-white font-semibold px-3.5 py-1.5 rounded-md text-xs flex items-center space-x-1.5 transition shadow-sm"
+                  className="flex items-center space-x-1.5 rounded-full bg-[#11361E] px-3.5 py-1.5 text-xs font-semibold text-white shadow-[0_8px_22px_rgba(17,54,30,0.16)] transition hover:-translate-y-0.5 hover:bg-[#0B2414]"
                 >
-                  <PlusCircle className="w-4 h-4" />
+                  <PlusCircle className="h-4 w-4" />
                   <span className="hidden sm:inline">Post Requirement</span>
                 </button>
               )}
@@ -104,11 +97,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenPostRequiremen
                     setShowNotifs(!showNotifs);
                     if (!showNotifs && unreadNotifsCount > 0) markNotifsRead();
                   }}
-                  className="relative p-2 rounded-md bg-white hover:bg-[#F5F2EB] text-[#5A6B5D] hover:text-[#11361E] border border-[#E2DDD3] transition"
+                  className="relative rounded-full border border-[#E2DDD3] bg-white/90 p-2 text-[#5A6B5D] transition hover:bg-[#F5F2EB] hover:text-[#11361E]"
                 >
-                  <Bell className="w-4 h-4" />
+                  <Bell className="h-4 w-4" />
                   {unreadNotifsCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#11361E] text-white font-bold text-[10px] rounded-full flex items-center justify-center">
+                    <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#11361E] text-[10px] font-bold text-white">
                       {unreadNotifsCount}
                     </span>
                   )}
@@ -156,9 +149,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenAuth, onOpenPostRequiremen
                 <button
                   onClick={logout}
                   title="Log Out"
-                  className="p-2 rounded-md bg-white hover:bg-rose-50 hover:text-rose-600 text-[#5A6B5D] border border-[#E2DDD3] transition"
+                  className="rounded-full border border-[#E2DDD3] bg-white/90 p-2 text-[#5A6B5D] transition hover:bg-rose-50 hover:text-rose-600"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="h-4 w-4" />
                 </button>
               </div>
             </>

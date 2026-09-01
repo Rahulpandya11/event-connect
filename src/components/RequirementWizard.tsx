@@ -149,7 +149,7 @@ export const RequirementWizard: React.FC<RequirementWizardProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-3xl bg-white border border-[#E2DDD3] rounded-xl shadow-2xl p-6 my-8 text-[#1F2923]">
+      <div className="relative w-full max-w-3xl lux-card my-8 text-[#1F2923]">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-[#5A6B5D] hover:text-[#11361E] p-1.5 rounded-md bg-[#FAF8F5] border border-[#E2DDD3]"
@@ -194,7 +194,7 @@ export const RequirementWizard: React.FC<RequirementWizardProps> = ({
                 <select
                   value={eventType}
                   onChange={e => setEventType(e.target.value)}
-                  className="w-full bg-[#FAF8F5] border border-[#E2DDD3] rounded-md px-3.5 py-2 text-xs text-[#1F2923] focus:outline-none focus:border-[#11361E]"
+                  className="w-full lux-input"
                 >
                   <option value="Wedding">Wedding</option>
                   <option value="Engagement">Engagement / Sangeet</option>
@@ -212,7 +212,7 @@ export const RequirementWizard: React.FC<RequirementWizardProps> = ({
                   type="date"
                   value={eventDate}
                   onChange={e => setEventDate(e.target.value)}
-                  className="w-full bg-[#FAF8F5] border border-[#E2DDD3] rounded-md px-3.5 py-2 text-xs text-[#1F2923] focus:outline-none focus:border-[#11361E]"
+                  className="w-full lux-input"
                 />
               </div>
 
@@ -222,7 +222,7 @@ export const RequirementWizard: React.FC<RequirementWizardProps> = ({
                   type="text"
                   value={city}
                   onChange={e => setCity(e.target.value)}
-                  className="w-full bg-[#FAF8F5] border border-[#E2DDD3] rounded-md px-3.5 py-2 text-xs text-[#1F2923] focus:outline-none focus:border-[#11361E]"
+                  className="w-full lux-input"
                 />
               </div>
 
@@ -233,7 +233,7 @@ export const RequirementWizard: React.FC<RequirementWizardProps> = ({
                   min={10}
                   value={guestCount}
                   onChange={e => setGuestCount(Number(e.target.value))}
-                  className="w-full bg-[#FAF8F5] border border-[#E2DDD3] rounded-md px-3.5 py-2 text-xs text-[#1F2923] focus:outline-none focus:border-[#11361E]"
+                  className="w-full lux-input"
                 />
               </div>
             </div>
@@ -260,7 +260,7 @@ export const RequirementWizard: React.FC<RequirementWizardProps> = ({
                     step={500}
                     value={budgetMin}
                     onChange={e => setBudgetMin(Number(e.target.value))}
-                    className="w-full bg-white border border-[#E2DDD3] rounded px-3 py-1.5 text-xs text-[#1F2923] focus:outline-none focus:border-[#11361E]"
+                    className="w-full lux-input"
                   />
                 </div>
                 <div>
@@ -270,7 +270,7 @@ export const RequirementWizard: React.FC<RequirementWizardProps> = ({
                     step={500}
                     value={budgetMax}
                     onChange={e => setBudgetMax(Number(e.target.value))}
-                    className="w-full bg-white border border-[#E2DDD3] rounded px-3 py-1.5 text-xs text-[#1F2923] focus:outline-none focus:border-[#11361E]"
+                    className="w-full lux-input"
                   />
                 </div>
               </div>
@@ -283,7 +283,7 @@ export const RequirementWizard: React.FC<RequirementWizardProps> = ({
                 placeholder="Describe theme, vibe, timing, special requests..."
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
-                className="w-full bg-[#FAF8F5] border border-[#E2DDD3] rounded-md px-3.5 py-2 text-xs text-[#1F2923] placeholder-[#8C9B8F] focus:outline-none focus:border-[#11361E]"
+                className="w-full lux-input"
               />
             </div>
           </div>
@@ -425,7 +425,7 @@ export const RequirementWizard: React.FC<RequirementWizardProps> = ({
                       placeholder={`e.g. Specific requirements for ${svc}...`}
                       value={serviceDetails[svc]?.notes || ''}
                       onChange={e => updateSubDetail(svc, 'notes', e.target.value)}
-                      className="w-full bg-white border border-[#E2DDD3] rounded p-1.5 text-xs text-[#1F2923] focus:outline-none focus:border-[#11361E]"
+                      className="w-full lux-input"
                     />
                   </div>
                 )}
@@ -552,7 +552,7 @@ export const RequirementWizard: React.FC<RequirementWizardProps> = ({
           {step > 1 ? (
             <button
               onClick={() => setStep(step - 1)}
-              className="px-4 py-2 rounded-md border border-[#E2DDD3] bg-[#FAF8F5] hover:bg-[#E8F0EA] text-[#5A6B5D] hover:text-[#11361E] text-xs font-semibold flex items-center space-x-1.5 transition"
+              className="px-4 py-2 rounded-md lux-ghost text-xs font-semibold flex items-center space-x-1.5 transition"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back</span>
@@ -564,7 +564,7 @@ export const RequirementWizard: React.FC<RequirementWizardProps> = ({
           {step < 5 ? (
             <button
               onClick={() => setStep(step + 1)}
-              className="px-5 py-2 rounded-md bg-[#11361E] hover:bg-[#0B2414] text-white text-xs font-semibold flex items-center space-x-1.5 shadow-sm transition"
+              className="px-5 py-2 rounded-md lux-cta flex items-center space-x-1.5"
             >
               <span>Next Step</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -573,7 +573,7 @@ export const RequirementWizard: React.FC<RequirementWizardProps> = ({
             <button
               onClick={handleSubmit}
               disabled={submitting}
-              className="px-6 py-2.5 rounded-md bg-[#11361E] hover:bg-[#0B2414] text-white text-xs font-semibold shadow-sm transition disabled:opacity-50"
+              className="px-6 py-2.5 rounded-md lux-cta text-xs font-semibold disabled:opacity-50"
             >
               {submitting ? 'Publishing Requirement...' : 'Publish Requirement for Bidding'}
             </button>
