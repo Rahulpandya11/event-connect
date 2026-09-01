@@ -14,7 +14,7 @@ import {
   saveDatabase,
   calculateProposalMatchScore,
   recalculateAllProposalScores
-} from './src/db/store.js';
+} from '../src/db/store';
 
 import {
   User,
@@ -30,9 +30,9 @@ import {
   Review,
   NotificationItem,
   ServiceCategory
-} from './src/types.js';
+} from '../src/types';
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET!;
 if (!JWT_SECRET) {
   console.error('FATAL: JWT_SECRET environment variable is not set. Refusing to start.');
   process.exit(1);
@@ -371,9 +371,9 @@ app.post('/api/requirements', requireAuth, requireRole('client'), (req: AuthRequ
     budgetMax,
     budgetHidden,
     notes,
-    bundleMode, // 'bundled' or 'split'
-    selectedServices, // array of strings e.g. ["Photography", "Catering"]
-    serviceDetails, // object mapping serviceType -> details
+    bundleMode,
+    selectedServices,
+    serviceDetails,
     proposalDeadline,
     referenceImages
   } = req.body;
@@ -407,12 +407,11 @@ app.post('/api/requirements', requireAuth, requireRole('client'), (req: AuthRequ
   const createdRequirements: Requirement[] = [];
 
   if (bundleMode === 'bundled') {
-    // Option A — Bundled ("Full Package"): ONE requirement with category "Full-Service Event Planning"
     const reqId = `req-${Date.now()}-full`;
     const newReq: Requirement = {
       id: reqId,
       requirementGroupId: groupId,
-      category: 'Full-Service Event Planning', // RESTRICTED to Full-Service providers only!
+      category: 'Full-Service Event Planning',
       status: 'open',
       proposalDeadline: proposalDeadline || new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
       createdAt: new Date().toISOString()
@@ -420,7 +419,6 @@ app.post('/api/requirements', requireAuth, requireRole('client'), (req: AuthRequ
     db.requirements.push(newReq);
     createdRequirements.push(newReq);
 
-    // Save service sub-form details
     for (const serviceType of selectedServices) {
       db.requirementServices.push({
         id: `svc-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
@@ -430,22 +428,20 @@ app.post('/api/requirements', requireAuth, requireRole('client'), (req: AuthRequ
       });
     }
 
-    // Notify full-service providers
     const fullServiceProviders = db.providerProfiles.filter(p => p.category === 'Full-Service Event Planning' && p.verificationStatus === 'verified');
     for (const p of fullServiceProviders) {
       createNotification(p.userId, 'new_requirement', 'New Bundled Event Requirement Posted!', `A client posted a full package requirement for ${eventType} on ${eventDate}.`);
     }
 
   } else {
-    // Option B — Split: Separate requirement per selected service
     for (let i = 0; i < selectedServices.length; i++) {
       const serviceType = selectedServices[i];
       const reqId = `req-${Date.now()}-${i}`;
-      
+
       const newReq: Requirement = {
         id: reqId,
         requirementGroupId: groupId,
-        category: serviceType, // Matched to providers of this specific service
+        category: serviceType,
         status: 'open',
         proposalDeadline: proposalDeadline || new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0],
         createdAt: new Date().toISOString()
@@ -461,7 +457,6 @@ app.post('/api/requirements', requireAuth, requireRole('client'), (req: AuthRequ
         details: serviceDetails?.[serviceType] || {}
       });
 
-      // Notify matching category providers
       const matchingProviders = db.providerProfiles.filter(p => p.category === serviceType && p.verificationStatus === 'verified');
       for (const p of matchingProviders) {
         createNotification(p.userId, 'new_requirement', `New ${serviceType} Requirement Posted!`, `A client requested ${serviceType} for a ${eventType} on ${eventDate}.`);
@@ -551,7 +546,6 @@ app.put('/api/requirements/group/:id', requireAuth, requireRole('client'), (req:
       summary: summaryStr
     });
 
-    // Notify matched/proposing providers
     const groupReqs = db.requirements.filter(r => r.requirementGroupId === group.id);
     const reqIds = groupReqs.map(r => r.id);
     const proposals = db.proposals.filter(p => reqIds.includes(p.requirementId));
@@ -651,9 +645,6 @@ app.get('/api/requirements/open', requireAuth, requireRole('provider'), (req: Au
     return res.status(400).json({ error: 'Provider profile missing' });
   }
 
-  // Filter requirements: Category must match provider category
-  // Full-Service providers see category == "Full-Service Event Planning"
-  // Single category providers see category == profile.category
   const matchingReqs = db.requirements.filter(r => {
     if (r.status === 'cancelled' || r.status === 'completed') return false;
     return r.category === profile.category;
@@ -691,10 +682,8 @@ app.get('/api/requirements/:id', (req: AuthRequest, res: Response) => {
   
   let rawProposals = db.proposals.filter(p => p.requirementId === requirement.id);
 
-  // Sort proposals by matchScore descending
   rawProposals.sort((a, b) => b.matchScore - a.matchScore);
 
-  // Anonymize unless shortlisted or current user is the provider who submitted it or client shortlisted
   const formattedProposals = rawProposals.map((p, index) => {
     const isShortlisted = p.status === 'shortlisted' || p.status === 'accepted';
     const isOwnProposal = req.user?.id && db.providerProfiles.some(prof => prof.id === p.providerId && prof.userId === req.user?.id);
@@ -763,12 +752,11 @@ app.post('/api/provider/verification', requireAuth, requireRole('provider'), (re
     if (verificationDocuments && verificationDocuments.length > 0) {
       profile.verificationDocuments = verificationDocuments;
     }
-    profile.verificationStatus = 'pending'; // Flag for admin verification queue
+    profile.verificationStatus = 'pending';
   }
 
   saveDatabase();
 
-  // Notify Admins
   const admins = db.users.filter(u => u.role === 'admin');
   for (const admin of admins) {
     createNotification(
@@ -790,7 +778,6 @@ app.post('/api/proposals', requireAuth, requireRole('provider'), (req: AuthReque
     return res.status(400).json({ error: 'Provider profile not found' });
   }
 
-  // CRITICAL MANDATORY GATE: Providers cannot submit proposals until approved by admin!
   if (profile.verificationStatus !== 'verified') {
     return res.status(403).json({
       error: 'Account Pending Verification. Your provider profile must be verified by an administrator before submitting proposals.'
@@ -812,13 +799,11 @@ app.post('/api/proposals', requireAuth, requireRole('provider'), (req: AuthReque
     return res.status(400).json({ error: 'This requirement is no longer accepting proposals.' });
   }
 
-  // Check if provider already submitted
   let proposal = db.proposals.find(p => p.requirementId === requirementId && p.providerId === profile.id);
 
   const group = db.requirementGroups.find(g => g.id === requirement.requirementGroupId);
 
   if (proposal) {
-    // Record price and plan text edit history
     const oldPrice = proposal.totalPrice;
     const newPriceNumber = Number(totalPrice);
     const priceChanged = oldPrice !== newPriceNumber;
@@ -846,14 +831,12 @@ app.post('/api/proposals', requireAuth, requireRole('provider'), (req: AuthReque
       });
     }
 
-    // Update existing proposal
     proposal.totalPrice = newPriceNumber;
     proposal.itemizedPrices = itemizedPrices || {};
     proposal.planText = planText;
     proposal.updatedAt = new Date().toISOString();
     proposal.matchScore = calculateProposalMatchScore(proposal, requirement, profile, group);
   } else {
-    // Create new proposal
     proposal = {
       id: `prop-${Date.now()}`,
       requirementId,
@@ -873,7 +856,6 @@ app.post('/api/proposals', requireAuth, requireRole('provider'), (req: AuthReque
 
   saveDatabase();
 
-  // Notify Client
   if (group) {
     createNotification(
       group.clientId,
@@ -1000,6 +982,10 @@ app.post('/api/proposals/:id/shortlist', requireAuth, requireRole('client'), (re
   const requirement = db.requirements.find(r => r.id === proposal.requirementId);
   const group = requirement ? db.requirementGroups.find(g => g.id === requirement.requirementGroupId) : undefined;
 
+  if (!requirement) {
+    return res.status(404).json({ error: 'Requirement not found' });
+  }
+
   if (!group || group.clientId !== req.user!.id) {
     return res.status(403).json({ error: 'Unauthorized to manage this proposal' });
   }
@@ -1009,7 +995,6 @@ app.post('/api/proposals/:id/shortlist', requireAuth, requireRole('client'), (re
     requirement.status = 'negotiating';
   }
 
-  // Find or create chat thread
   let thread = db.chatThreads.find(t => t.proposalId === proposal.id);
   const providerProf = db.providerProfiles.find(p => p.id === proposal.providerId);
 
@@ -1030,7 +1015,6 @@ app.post('/api/proposals/:id/shortlist', requireAuth, requireRole('client'), (re
     };
     db.chatThreads.push(thread);
 
-    // Initial message
     db.chatMessages.push({
       id: `msg-${Date.now()}`,
       threadId: thread.id,
@@ -1043,7 +1027,6 @@ app.post('/api/proposals/:id/shortlist', requireAuth, requireRole('client'), (re
 
   saveDatabase();
 
-  // Notify Provider
   if (providerProf) {
     createNotification(
       providerProf.userId,
@@ -1092,12 +1075,10 @@ app.post('/api/proposals/:id/accept', requireAuth, requireRole('client'), (req: 
     return res.status(403).json({ error: 'Unauthorized to accept this proposal' });
   }
 
-  // Update proposal & requirement status
   proposal.status = 'accepted';
   requirement!.status = 'provider_selected';
   requirement!.selectedProposalId = proposal.id;
 
-  // Auto-reject other proposals for this requirement
   const otherProposals = db.proposals.filter(p => p.requirementId === requirement!.id && p.id !== proposal.id);
   for (const other of otherProposals) {
     other.status = 'rejected';
@@ -1107,7 +1088,6 @@ app.post('/api/proposals/:id/accept', requireAuth, requireRole('client'), (req: 
     }
   }
 
-  // Create Booking
   const providerProf = db.providerProfiles.find(p => p.id === proposal.providerId);
   const booking: Booking = {
     id: `book-${Date.now()}`,
@@ -1128,7 +1108,6 @@ app.post('/api/proposals/:id/accept', requireAuth, requireRole('client'), (req: 
   db.bookings.push(booking);
   saveDatabase();
 
-  // Notify Provider
   if (providerProf) {
     createNotification(
       providerProf.userId,
@@ -1181,7 +1160,6 @@ app.post('/api/proposals/:id/questions', requireAuth, requireRole('client'), (re
     return res.status(403).json({ error: 'Unauthorized to ask questions on this proposal' });
   }
 
-  // Cap at 1 active pre-shortlist question per proposal to prevent bypass
   const existingCount = db.preShortlistQuestions.filter(q => q.proposalId === proposal.id && q.clientId === req.user!.id).length;
   if (existingCount >= 3) {
     return res.status(400).json({ error: 'Maximum pre-shortlist questions reached for this proposal. Please shortlist to initiate open chat.' });
@@ -1198,7 +1176,6 @@ app.post('/api/proposals/:id/questions', requireAuth, requireRole('client'), (re
   db.preShortlistQuestions.push(newQ);
   saveDatabase();
 
-  // Notify Provider
   const providerProf = db.providerProfiles.find(p => p.id === proposal.providerId);
   if (providerProf) {
     createNotification(providerProf.userId, 'qa_asked', 'New Question on Anonymized Proposal', 'A client asked a clarifying question on your submitted proposal.');
@@ -1225,7 +1202,6 @@ app.post('/api/questions/:id/answer', requireAuth, requireRole('provider'), (req
 
   saveDatabase();
 
-  // Notify Client
   createNotification(question.clientId, 'qa_answered', 'Provider Answered Your Question', 'An anonymized provider responded to your clarifying question.');
 
   res.json(question);
@@ -1299,7 +1275,6 @@ app.post('/api/chat/threads/:id/messages', requireAuth, (req: AuthRequest, res: 
   thread.lastMessage = isQuoteUpdate ? `Revised Quote: $${quoteData?.totalPrice?.toLocaleString()}` : message.messageText;
   thread.lastMessageAt = message.sentAt;
 
-  // If quote update, also update the proposal record in DB!
   if (isQuoteUpdate && quoteData && req.user!.role === 'provider') {
     const proposal = db.proposals.find(p => p.id === thread.proposalId);
     if (proposal) {
@@ -1311,10 +1286,8 @@ app.post('/api/chat/threads/:id/messages', requireAuth, (req: AuthRequest, res: 
 
   saveDatabase();
 
-  // Socket broadcast
   io.to(`thread:${thread.id}`).emit('new_message', message);
 
-  // Notify receiver
   const receiverId = req.user!.role === 'client' 
     ? db.providerProfiles.find(p => p.id === thread.providerId)?.userId 
     : thread.clientId;
@@ -1340,7 +1313,6 @@ app.get('/api/bookings', requireAuth, (req: AuthRequest, res: Response) => {
     bookings = db.bookings;
   }
 
-  // Inject review flag
   const result = bookings.map(b => ({
     ...b,
     hasReview: db.reviews.some(r => r.bookingId === b.id)
@@ -1389,7 +1361,6 @@ app.post('/api/bookings/:id/review', requireAuth, requireRole('client'), (req: A
 
   db.reviews.push(review);
 
-  // Update provider average rating
   const prof = db.providerProfiles.find(p => p.id === booking.providerId);
   if (prof) {
     const providerReviews = db.reviews.filter(r => r.providerId === prof.id);
@@ -1398,7 +1369,6 @@ app.post('/api/bookings/:id/review', requireAuth, requireRole('client'), (req: A
     prof.avgRating = Number((sum / providerReviews.length).toFixed(1));
   }
 
-  // Recalculate match scores across proposals
   recalculateAllProposalScores();
 
   saveDatabase();
@@ -1418,7 +1388,7 @@ app.get('/api/admin/pending-providers', requireAuth, requireRole('admin'), (req:
 });
 
 app.post('/api/admin/providers/:id/verify', requireAuth, requireRole('admin'), (req: AuthRequest, res: Response) => {
-  const { status, rejectionReason } = req.body; // 'verified' | 'rejected'
+  const { status, rejectionReason } = req.body;
   if (!status || !['verified', 'rejected'].includes(status)) {
     return res.status(400).json({ error: 'Invalid verification status' });
   }
@@ -1432,7 +1402,6 @@ app.post('/api/admin/providers/:id/verify', requireAuth, requireRole('admin'), (
 
   saveDatabase();
 
-  // Notify Provider
   createNotification(
     prof.userId,
     'verification_update',
@@ -1484,7 +1453,6 @@ app.put('/api/admin/match-weights', requireAuth, requireRole('admin'), (req: Aut
     completenessWeight: Number(completenessWeight)
   };
 
-  // Trigger platform-wide proposal score recalculation!
   recalculateAllProposalScores();
 
   res.json(db.platformSettings.matchScoreWeights);
@@ -1505,7 +1473,6 @@ app.get('/api/admin/analytics', requireAuth, requireRole('admin'), (req: AuthReq
   const totalProposals = db.proposals.length;
   const acceptedProposals = db.proposals.filter(p => p.status === 'accepted').length;
 
-  // Category counts
   const catMap: Record<string, number> = {};
   for (const reqObj of db.requirements) {
     catMap[reqObj.category] = (catMap[reqObj.category] || 0) + 1;
@@ -1586,7 +1553,7 @@ io.on('connection', (socket) => {
   });
 });
 
-// --- Vite Middleware Integration ---
+// --- Vite Middleware Integration & Server Start ---
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({

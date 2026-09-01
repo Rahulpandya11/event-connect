@@ -162,7 +162,7 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({ onOpenPostWiza
     if (confirm(`Are you sure you want to delete the posting for "${eventType}"? All linked proposals will be withdrawn.`)) {
       try {
         await api.deleteRequirementGroup(groupId);
-        if (selectedReq && groups.some(g => g.id === groupId && g.requirements?.some((r: any) => r.id === selectedReq.id))) {
+        if (selectedReq && groups.some(g => g.id === groupId && (g as any).requirements?.some((r: any) => r.id === selectedReq.id))) {
           setSelectedReq(null);
           setProposals([]);
         }
@@ -215,14 +215,14 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({ onOpenPostWiza
   return (
     <div className="space-y-6">
       {/* Dashboard Top Tabs Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-xl border border-[#E2DDD3] shadow-sm">
+      <div className="surface-card flex flex-wrap items-center justify-between gap-4 rounded-[24px] border border-[#E2DDD3]/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(250,248,245,0.96))] p-4 shadow-[0_16px_40px_rgba(17,54,30,0.05)]">
         <div className="flex items-center space-x-2">
           <button
             onClick={() => setActiveTab('postings')}
-            className={`px-4 py-2 rounded-md text-xs font-semibold transition flex items-center space-x-2 ${
+            className={`rounded-full px-4 py-2 text-xs font-semibold transition flex items-center space-x-2 ${
               activeTab === 'postings'
-                ? 'bg-[#11361E] text-white shadow-sm'
-                : 'text-[#5A6B5D] hover:text-[#11361E] bg-[#FAF8F5] border border-[#E2DDD3]'
+                ? 'bg-[#11361E] text-white shadow-[0_10px_22px_rgba(17,54,30,0.16)]'
+                : 'border border-[#E2DDD3] bg-[#FAF8F5] text-[#5A6B5D] hover:text-[#11361E]'
             }`}
           >
             <Layers className="w-4 h-4" />
@@ -231,10 +231,10 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({ onOpenPostWiza
 
           <button
             onClick={() => { setActiveTab('negotiations'); loadChats(); }}
-            className={`px-4 py-2 rounded-md text-xs font-semibold transition flex items-center space-x-2 ${
+            className={`rounded-full px-4 py-2 text-xs font-semibold transition flex items-center space-x-2 ${
               activeTab === 'negotiations'
-                ? 'bg-[#11361E] text-white shadow-sm'
-                : 'text-[#5A6B5D] hover:text-[#11361E] bg-[#FAF8F5] border border-[#E2DDD3]'
+                ? 'bg-[#11361E] text-white shadow-[0_10px_22px_rgba(17,54,30,0.16)]'
+                : 'border border-[#E2DDD3] bg-[#FAF8F5] text-[#5A6B5D] hover:text-[#11361E]'
             }`}
           >
             <MessageSquare className="w-4 h-4" />
@@ -243,10 +243,10 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({ onOpenPostWiza
 
           <button
             onClick={() => { setActiveTab('bookings'); loadBookings(); }}
-            className={`px-4 py-2 rounded-md text-xs font-semibold transition flex items-center space-x-2 ${
+            className={`rounded-full px-4 py-2 text-xs font-semibold transition flex items-center space-x-2 ${
               activeTab === 'bookings'
-                ? 'bg-[#11361E] text-white shadow-sm'
-                : 'text-[#5A6B5D] hover:text-[#11361E] bg-[#FAF8F5] border border-[#E2DDD3]'
+                ? 'bg-[#11361E] text-white shadow-[0_10px_22px_rgba(17,54,30,0.16)]'
+                : 'border border-[#E2DDD3] bg-[#FAF8F5] text-[#5A6B5D] hover:text-[#11361E]'
             }`}
           >
             <CheckCircle2 className="w-4 h-4" />
@@ -256,7 +256,7 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({ onOpenPostWiza
 
         <button
           onClick={onOpenPostWizard}
-          className="px-4 py-2 rounded-md bg-[#11361E] hover:bg-[#0B2414] text-white font-semibold text-xs flex items-center space-x-1.5 transition shadow-sm"
+          className="rounded-full bg-[#11361E] px-4 py-2 text-xs font-semibold text-white shadow-[0_10px_22px_rgba(17,54,30,0.16)] transition hover:-translate-y-0.5 hover:bg-[#0B2414] flex items-center space-x-1.5"
         >
           <Plus className="w-4 h-4" />
           <span>Post New Requirement</span>
@@ -276,7 +276,7 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({ onOpenPostWiza
             {loading ? (
               <div className="text-xs text-[#5A6B5D] py-8 text-center">Loading requirement groups...</div>
             ) : groups.length === 0 ? (
-              <div className="p-6 bg-white rounded-xl border border-[#E2DDD3] text-center space-y-3 shadow-sm">
+              <div className="surface-card rounded-[24px] border border-[#E2DDD3]/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(250,248,245,0.96))] p-6 text-center shadow-sm">
                 <p className="text-xs text-[#5A6B5D]">No requirements posted yet. Get competing proposals for your wedding or event!</p>
                 <button
                   onClick={onOpenPostWizard}
@@ -291,7 +291,7 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({ onOpenPostWiza
                 const isHistoryExpanded = expandedHistoryGroupIds.includes(grp.id);
 
                 return (
-                  <div key={grp.id} className="p-4 bg-white border border-[#E2DDD3] rounded-xl space-y-3 shadow-sm">
+                  <div key={grp.id} className="surface-card rounded-[24px] border border-[#E2DDD3]/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(250,248,245,0.96))] p-4 shadow-sm">
                     <div className="flex items-start justify-between">
                       <div>
                         <div className="flex items-center space-x-2">
@@ -366,7 +366,7 @@ export const ClientDashboard: React.FC<ClientDashboardProps> = ({ onOpenPostWiza
 
                     {/* Sub-Requirements List */}
                     <div className="space-y-2 pt-2 border-t border-[#E2DDD3]">
-                      {grp.requirements?.map((req: any) => (
+                      {(grp as any).requirements?.map((req: any) => (
                         <div
                           key={req.id}
                           onClick={() => handleSelectRequirement(req)}

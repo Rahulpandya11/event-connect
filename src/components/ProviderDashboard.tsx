@@ -198,7 +198,7 @@ export const ProviderDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Provider Header Profile Summary */}
-      <div className="p-5 bg-white border border-[#E2DDD3] rounded-xl flex flex-wrap items-center justify-between gap-4 shadow-sm">
+      <div className="lux-card flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2">
             <h2 className="text-xl font-serif italic font-bold text-[#11361E]">{providerProfile?.businessName || 'Provider Studio'}</h2>
@@ -229,7 +229,7 @@ export const ProviderDashboard: React.FC = () => {
 
       {/* Mandatory Pending Verification Banner */}
       {!isVerified && (
-        <div className="p-4 rounded-xl bg-[#E8F0EA]/70 border border-[#11361E]/30 text-[#1F2923] text-xs flex flex-wrap items-center justify-between gap-3 shadow-sm">
+        <div className="p-4 rounded-xl bg-[#E8F0EA]/70 border border-[#11361E]/30 text-[#1F2923] text-xs flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-start space-x-3 max-w-2xl">
             <AlertTriangle className="w-5 h-5 text-[#11361E] shrink-0 mt-0.5" />
             <div>
@@ -249,13 +249,13 @@ export const ProviderDashboard: React.FC = () => {
       )}
 
       {/* Navigation Tabs */}
-      <div className="flex items-center space-x-2 border-b border-[#E2DDD3] pb-2">
+      <div className="flex items-center space-x-2 border-b border-transparent pb-2">
         <button
           onClick={() => setActiveTab('open_reqs')}
           className={`px-4 py-2 rounded-md text-xs font-semibold transition flex items-center space-x-2 ${
             activeTab === 'open_reqs'
-              ? 'bg-[#11361E] text-white shadow-sm'
-              : 'text-[#5A6B5D] hover:text-[#11361E] bg-[#FAF8F5] border border-[#E2DDD3]'
+              ? 'lux-cta'
+              : 'lux-ghost'
           }`}
         >
           <Briefcase className="w-4 h-4" />
@@ -266,8 +266,8 @@ export const ProviderDashboard: React.FC = () => {
           onClick={() => { setActiveTab('chats'); loadChats(); }}
           className={`px-4 py-2 rounded-md text-xs font-semibold transition flex items-center space-x-2 ${
             activeTab === 'chats'
-              ? 'bg-[#11361E] text-white shadow-sm'
-              : 'text-[#5A6B5D] hover:text-[#11361E] bg-[#FAF8F5] border border-[#E2DDD3]'
+              ? 'lux-cta'
+              : 'lux-ghost'
           }`}
         >
           <MessageSquare className="w-4 h-4" />
@@ -290,8 +290,8 @@ export const ProviderDashboard: React.FC = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {openReqs.map(req => (
-                <div key={req.id} className="p-5 bg-white border border-[#E2DDD3] rounded-xl space-y-4 flex flex-col justify-between shadow-sm">
+                {openReqs.map(req => (
+                  <div key={req.id} className="p-5 lux-card space-y-4 flex flex-col justify-between">
                   <div>
                     <div className="flex items-start justify-between">
                       <div>
@@ -350,15 +350,15 @@ export const ProviderDashboard: React.FC = () => {
                         <div className="flex items-center justify-end space-x-2 pt-1 border-t border-[#E2DDD3]">
                           <button
                             onClick={() => setEditingProposal(req.myProposal)}
-                            className="px-3 py-1 rounded-md text-xs font-semibold bg-[#11361E] text-white hover:bg-[#0B2414] transition flex items-center space-x-1 shadow-sm"
+                            className="px-3 py-1 rounded-md text-xs font-semibold lux-cta flex items-center space-x-1 gap-1"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
                             <span>Edit Proposal & Price</span>
                           </button>
-                          <button
-                            onClick={() => handleDeleteProposal(req.myProposal.id)}
-                            className="px-3 py-1 rounded-md text-xs font-semibold bg-white text-rose-600 border border-rose-200 hover:bg-rose-50 transition flex items-center space-x-1"
-                          >
+                            <button
+                              onClick={() => handleDeleteProposal(req.myProposal.id)}
+                              className="px-3 py-1 rounded-md text-xs font-semibold bg-white text-rose-600 border border-rose-200 hover:bg-rose-50 transition flex items-center space-x-1"
+                            >
                             <Trash2 className="w-3.5 h-3.5" />
                             <span>Withdraw</span>
                           </button>
@@ -372,8 +372,8 @@ export const ProviderDashboard: React.FC = () => {
                           disabled={!isVerified}
                           className={`px-4 py-2 rounded-md text-xs font-semibold transition shadow-sm ${
                             isVerified
-                              ? 'bg-[#11361E] hover:bg-[#0B2414] text-white'
-                              : 'bg-[#FAF8F5] text-[#8C9B8F] cursor-not-allowed border border-[#E2DDD3]'
+                              ? 'lux-cta'
+                              : 'lux-ghost cursor-not-allowed'
                           }`}
                         >
                           Submit Blind Proposal
